@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html prefix="og:http://ogp.me/ns#">
+  <head>
+    <title>বাংলা হাদিস</title>
+    <meta name="Author" content="Muntashir Al-Islam"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta property="og:description" data-page-subject="true" content="বাংলা হাদীস পড়ার পোর্টাল"/>
+    <meta property="og:title" data-page-subject="true" content="বাংলা হাদীস"/>
+    <meta property="og:url" data-page-subject="true" content="http://muntashirakon.github.io/BanglaHadith"/>
+    <meta property="og:site_name" data-page-subject="true" content="বাংলা হাদিস"/>
+    <meta property="og:type" data-page-subject="true" content="website"/>
+    <meta content='162752990790570' property='fb:app_id'>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+	<script src="sql.js"></script>
+	<script src="sqlite.js"></script>
+    <link rel="stylesheet" href="main.css" />
+  </head>
+  <body>
+    <script>
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId      : '162752990790570',
+          xfbml      : true,
+          version    : 'v2.6'
+        });
+      };
+
+      (function(d, s, id){
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {return;}
+        js = d.createElement(s); js.id = id;
+        js.src = "//connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+      }(document, 'script', 'facebook-jssdk'));
+    </script>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="inner-nav">
+        <div class="container">
+          <div class="navbar-brand">বাংলা হাদিস</div>
+          <!--div class="navbar-form form-inline"><input class="form-control" name="keyword" id="keyword" placeholder="খুঁজুন" onKeyUp="hd.show_result($(this).val());" autofocus /></div-->
+        </div>
+      </div>
+    </div>
+    <div class="container" id="container">
+      <div class="row">
+        <div class="col-sm-4 col-xs-*">
+            <select id="books" class="hidden-xs" style="display: block;" onchange="hd.get_sections(this.value)">
+            </select>
+            <div id="sections" class="hidden-xs" style="display: block;">
+            </div>
+        </div>
+        <div class="col-sm-8 col-xs-*">
+            <h3 id="title">আজকের হাদীস</h3>
+            <div class="result_set" id="result_set"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

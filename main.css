@@ -1,0 +1,48 @@
+
+#books, #sections{
+    margin: 1px auto;
+    display: block;
+}
+
+.result_set, #sections{
+    overflow: auto;
+}
+#sections .selected{
+    background: #dddddd;
+    font-weight: 700;
+}
+
+.word{
+    cursor: pointer;
+    padding-left: 5px;
+    text-align: left;
+    white-space: nowrap;
+}
+.word:hover{
+    background: #dddddd;
+}
+.result{
+    padding: 5px;
+    display: block;
+    border-bottom: 1px solid #eeeeee;
+}
+.result .hadith-container, .result .hadith-container:hover, .result .hadith-container:visited, .result .hadith-container:active, .result .hadith-container:link{
+    text-decoration: none;
+    color: inherit;
+}
+.result_set .selected{
+    background: #dddddd !important;
+}
+.result:nth-child(odd){
+    background: #ffeeff;
+}
+.result:nth-child(even){
+    background: #eeffee;
+}
+.icon{
+    height: 20px;
+    width: 20px;
+}
+.add-space:after{
+    content: ' ';
+}

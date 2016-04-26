@@ -16,15 +16,15 @@ function popout(url,name,height,width){
 
 
 var Hadith = function(){
-    var img_src = "https://raw.githubusercontent.com/mujtahid-akon/English-to-Bangla-Dictionary/master/images/";
     var db;
-    var keyword;
+    //var keyword;
     var book_id;
-    var section_id;
+    //var section_id;
     this.db_connect = function(array){  // connect db
         var uInt8Array = new Uint8Array(array);
         db = new SQL.Database(uInt8Array);
     };
+    /*
     this.show_result = function(word, bypass){ // by HadithId, Book, Section, [Chapter.] Hadith
         keyword = word.trim();
         //keyword = keyword.replace(/[^A-Za-z0-9\-\s\']/g, "");
@@ -55,7 +55,7 @@ var Hadith = function(){
             //this.show_image(true);
         }
         //this.show_suggestions();
-    };/*
+    };
     this.show_image = function(replace_input){
         if (replace_input) $('#keyword').val(keyword);
         if (keyword != "") $("#result").attr("src", img_src + keyword);
@@ -86,8 +86,15 @@ var Hadith = function(){
         var sections = db.exec("SELECT SectionID, SectionBD FROM hadithsection WHERE BookID=" + book_id);
         sections = sections[0].values;
         $("#sections").html("");
-        for(var i = 0; i < sections.length; i++)
-            $("#sections").append("<div class='word' id='section-" + sections[i][0] + "' onclick='hd.get_hadiths(" + sections[i][0] + ");'>" + sections[i][1] + "</div>");
+        if($(window).width() > 768) {
+            for(var i = 0; i < sections.length; i++)
+                $("#sections").append("<div class='word' id='section-" + sections[i][0] + "' onclick='hd.get_hadiths(" + sections[i][0] + ");'>" + sections[i][1] + "</div>");
+        }else{
+            $("#sections").append("<select id='sections-selection' style='display: block;' onchange='hd.get_hadiths(this.value)'></select>");
+            $("#sections-selection").append("<option selected disabled>অধ্যায় সমূহ</option>");
+            for(var i = 0; i < sections.length; i++)
+                $("#sections-selection").append("<option id='section-" + sections[i][0] + "' value='" + sections[i][0] + "'>" + sections[i][1] + "</option>");
+        }
         this.get_hadiths(sections[0][0]);
     };/*
     this.get_chapters = function(sectionId){
@@ -114,35 +121,27 @@ var Hadith = function(){
         $("#title").html("<h2>" + $("#section-" + section_id).html() + "</h2>");
         $(".result_set").height($(window).height()-$("#title").height()-85);
         for(var i = 0; i < hadiths.length; i++){
-            if(hadiths[i][2] == null) hadiths[i][2] = "";
-            $("#result_set").append("<div id='hadith-" + hadiths[i][0] + "' class='result' onclick='hd.set_hadith(" + hadiths[i][0] + ")'>" +
-                "<a class='hadith-container' href='#hadith-" + hadiths[i][0] + "'>" +
-                "<div class='arabic'>" + hadiths[i][2]+ "</div>" +
-                "<div class='bangla'>" + hadiths[i][3] + "</div>" +
-                "</a>" +
-                "<div class='sharer'>" +
-                    "<span class='add-space'><img class='icon' src='https://fbstatic-a.akamaihd.net/rsrc.php/v2/yQ/r/7GFXgco-uzw.png' onclick='popout(\"https://www.facebook.com/sharer/sharer.php?app_id=162752990790570&sdk=joey&u=http%3A%2F%2Fmuntashirakon.github.io%2FBanglaHadith%2F%23hadith-" + hadiths[i][0] + "&display=popup&ref=plugin&src=share_button\", \"Share on Facebook\",320,480);'></span>" +
-                    "<span class='add-space'><img class='icon' src='https://g.twimg.com/dev/documentation/image/Twitter_logo_blue_16.png' onclick='popout(\"https://twitter.com/intent/tweet?url=http%3A%2F%2Fmuntashirakon.github.io%2FBanglaHadith%2F%23hadith-" + hadiths[i][0] + "&original_referer=http%3A%2F%2Fmuntashirakon.github.io%2FBanglaHadith%2F\", \"Share on Twitter\",320,480);'></span>" +
-                    "<span class='add-space'><img class='icon' src='https://developers.google.com/+/images/branding/g+138.png' onclick='popout(\"https://plus.google.com/share?url=http%3A%2F%2Fmuntashirakon.github.io%2FBanglaHadith%2F%23hadith-" + hadiths[i][0] + "\", \"Share on Google Plus\",320,480);'></span>" +
-                    "<span><img class='icon' src='https://lh5.ggpht.com/UBlRm4P7TJ8GAxA53sAGZJMrL2tPzRbdDe0nk4aw_7ktdh_hYGhUuvjtx8xC4Uk8uyWr=w300' onclick='$(\"#share-" + hadiths[i][0] + "\").toggle();'></span>" +
-                    "<div style='display: none;' id='share-" + hadiths[i][0] + "'><input class='form-control' type='text' value='http://muntashirakon.github.io/BanglaHadith/#hadith-" + hadiths[i][0] +"' onClick='this.select()' /></div>" +
-                "</div>" +
-                "</div>");
+            this.gen_hadith(hadiths[i][0], hadiths[i][2], hadiths[i][3]);
         }
+    };
+    this.get_book = function(book_id){
+        var book = db.exec("SELECT BookNameBD FROM hadithbook WHERE BookID=" + book_id);
+        if(book[0]) return book[0].values[0][0];
+        return false;
+    };
+    this.get_section = function(section_id){
+        var section = db.exec("SELECT SectionBD FROM hadithsection WHERE SectionID=" + section_id);
+        if(section[0]) return section[0].values[0][0];
+        else return false;
     };
     this.get_hadith = function(hadith_id){
         var hadith;
         if(hadith_id === undefined) // generate a random hadith
             hadith = db.exec("SELECT HadithID, HadithNo, ArabicHadith, BanglaHadith, HadithNote, HadithStatus FROM hadithmain WHERE BookID!=15 ORDER BY RANDOM() LIMIT 1");
         else
-            hadith = db.exec("SELECT HadithID, HadithNo, ArabicHadith, BanglaHadith, HadithNote, HadithStatus FROM hadithmain WHERE HadithID=" + hadith_id);
+            hadith = db.exec("SELECT HadithID, HadithNo, ArabicHadith, BanglaHadith, HadithNote, HadithStatus, BookID, SectionID FROM hadithmain WHERE HadithID=" + hadith_id);
         hadith = hadith[0].values;
-        if(hadith[0][2] == null) hadith[0][2] = "";
-        $("#result_set").append("<a id='hadith-" + hadith[0][0] + "' class='result' href='#hadith-" + hadith[0][0] + "'>" +
-            "<div class='arabic'>" + hadith[0][2]+ "</div>" +
-            "<div class='bangla'>" + hadith[0][3] + "</div>" +
-            "</a>");
-        return hadith[0][0]; // Hadith ID
+        return this.gen_hadith(hadith[0][0], hadith[0][2], hadith[0][3], hadith[0][6], hadith[0][7]);
     };
     this.set_hadith = function(hadith_id){
         $(".result").removeClass("selected");
@@ -156,6 +155,24 @@ var Hadith = function(){
         url = url.replace("hadith-", "");
         $("#title").html("");
         return this.get_hadith(url);
+    };
+    this.gen_hadith = function(hadith_id, hadith_ar, hadith_bn, book_id, section_id){
+        if(hadith_ar == null) hadith_ar = "";
+        if(book_id && section_id) $("#title").html("বইঃ " + this.get_book(book_id) + "<br />অধ্যায়ঃ " + this.get_section(section_id));
+        $("#result_set").append("<div id='hadith-" + hadith_id + "' class='result' onclick='hd.set_hadith(" + hadith_id + ")'>" +
+            "<a class='hadith-container' href='#hadith-" + hadith_id + "'>" +
+            "<div class='arabic'>" + hadith_ar + "</div>" +
+            "<div class='bangla'>" + hadith_bn + "</div>" +
+            "</a>" +
+            "<div class='sharer'>" +
+            "<span class='add-space'><img class='icon' src='https://fbstatic-a.akamaihd.net/rsrc.php/v2/yQ/r/7GFXgco-uzw.png' onclick='popout(\"https://www.facebook.com/sharer/sharer.php?app_id=162752990790570&sdk=joey&u=http%3A%2F%2Fmuntashirakon.github.io%2FBanglaHadith%2F%23hadith-" + hadith_id + "&display=popup&ref=plugin&src=share_button\", \"Share on Facebook\",320,480);'></span>" +
+            "<span class='add-space'><img class='icon' src='https://g.twimg.com/dev/documentation/image/Twitter_logo_blue_16.png' onclick='popout(\"https://twitter.com/intent/tweet?url=http%3A%2F%2Fmuntashirakon.github.io%2FBanglaHadith%2F%23hadith-" + hadith_id + "&original_referer=http%3A%2F%2Fmuntashirakon.github.io%2FBanglaHadith%2F\", \"Share on Twitter\",320,480);'></span>" +
+            "<span class='add-space'><img class='icon' src='https://developers.google.com/+/images/branding/g+138.png' onclick='popout(\"https://plus.google.com/share?url=http%3A%2F%2Fmuntashirakon.github.io%2FBanglaHadith%2F%23hadith-" + hadith_id + "\", \"Share on Google Plus\",320,480);'></span>" +
+            "<span><img class='icon' src='https://lh5.ggpht.com/UBlRm4P7TJ8GAxA53sAGZJMrL2tPzRbdDe0nk4aw_7ktdh_hYGhUuvjtx8xC4Uk8uyWr=w300' onclick='$(\"#share-" + hadith_id + "\").toggle();'></span>" +
+            "<div style='display: none;' id='share-" + hadith_id + "'><input class='form-control' type='text' value='http://muntashirakon.github.io/BanglaHadith/#hadith-" + hadith_id +"' onClick='this.select()' /></div>" +
+            "</div>" +
+            "</div>");
+        return hadith_id;
     };
     this.gen_hotd = function(){
         var cookie = new Cookie();
@@ -200,11 +217,13 @@ $(document).ready(function(){
     var nav_height =  $(".navbar-fixed-top").height() + 5;
     $("#container").css("padding-top", nav_height);
     var w_height = $(window).height();
-    $("#sections").height(w_height-nav_height-$("#books").height()-8);
-    $(".result_set").height($(window).height()-$("#title").height()-85);
+    if($(window).width() > 768) {
+        $("#sections").height(w_height - nav_height - $("#books").height() - 8);
+        $(".result_set").height($(window).height() - $("#title").height() - 85);
+    }
     //$("#suggestion").width($("#keyword").width());
     
-    var db_src = "/hadith/hadith.db";
+    var db_src = "hadith.db";
     var xhr = new XMLHttpRequest();
     xhr.open('GET', db_src, true);
     xhr.responseType = 'arraybuffer';
@@ -212,7 +231,9 @@ $(document).ready(function(){
         hd.db_connect(this.response);
         hd.get_books();
         if(hd.get_url() == 0) hd.gen_hotd();
-        else $(".result_set").height($(window).height()-76);
+        else{
+            if($(window).width() > 768) $(".result_set").height($(window).height()-137);
+        }
         // have to set after hd.get_books();
         $("#sections").width($("#books").width());
     };
